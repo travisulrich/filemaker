@@ -8,6 +8,17 @@ use FileMaker\Server;
 class Builder {
 
     /**
+     * @var array
+     */
+    protected static $operators = array(
+        '=' => 'eq',
+        '>' => 'gt',
+        '>=' => 'gte',
+        '<' => 'lt',
+        '<=' => 'lte'
+    );
+
+    /**
      * @var string
      */
     protected $database;
@@ -216,7 +227,11 @@ class Builder {
 
         switch($this->findCommand) {
             case '-find':
-                return array_merge($params, $this->buildFind());
+                if($this->recordId) {
+                    return array_merge($params, $this->buildFindByRecordId());
+                } else {
+                    return array_merge($params, $this->buildFind());
+                }
             case '-findall':
                 return array_merge($params, $this->buildFindAll());
             case '-findany':
@@ -256,6 +271,20 @@ class Builder {
      *
      */
     public function buildFind()
+    {
+        $params = array();
+        foreach($this->wheres as $where) {
+            $params[$where->column] = $where->value;
+            $params[$where->column.'.op'] = static::$operators[$where->operator];
+        }
+
+        return $params;
+    }
+
+    /**
+     *
+     */
+    public function buildFindByRecordId()
     {
         return array(
             '-recid' => $this->recordId
@@ -310,7 +339,11 @@ class Builder {
     public function first()
     {
         $this->skip(0)->take(1);
-        $this->findCommand = '-findany';
+        if ($this->recordId or count($this->wheres) > 0) {
+            $this->findCommand = '-find';
+        } else {
+            $this->findCommand = '-findany';
+        }
 
         return $this->execute()->first();
     }
