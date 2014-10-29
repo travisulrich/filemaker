@@ -170,19 +170,25 @@ class Builder {
     }
 
     /**
-     * @param $amount
+     * @param int $amount
+     * @return $this
      */
     public function skip($amount)
     {
         $this->skip = $amount;
+
+        return $this;
     }
 
     /**
-     * @param $amount
+     * @param int $amount
+     * @return $this
      */
     public function take($amount)
     {
         $this->take = $amount;
+
+        return $this;
     }
 
     /**
@@ -289,7 +295,11 @@ class Builder {
      */
     public function get()
     {
-        $this->findCommand = '-findquery';
+        if(count($this->wheres) > 0) {
+            $this->findCommand = '-findquery';
+        } else {
+            $this->findCommand = '-findall';
+        }
 
         return $this->execute();
     }
