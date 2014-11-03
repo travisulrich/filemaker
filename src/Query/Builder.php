@@ -1,5 +1,6 @@
 <?php namespace FileMaker\Query;
 
+use DateTime;
 use FileMaker\Http\Client;
 use FileMaker\Parser\Parser;
 use FileMaker\Response;
@@ -11,6 +12,7 @@ class Builder {
      * @var array
      */
     protected static $operators = array(
+        'bw' => 'bw',
         '=' => 'eq',
         '>' => 'gt',
         '>=' => 'gte',
@@ -41,7 +43,7 @@ class Builder {
     /**
      * @var string
      */
-    protected $findCommand;
+    protected $command;
 
     /**
      * @var int
@@ -67,6 +69,11 @@ class Builder {
      * @var HttpClient
      */
     protected $client;
+
+    /**
+     * @var array
+     */
+    protected $attributes;
 
     /**
      * @param Parser $parser
@@ -111,7 +118,7 @@ class Builder {
     {
         if($value === null) {
             $value = $operator;
-            $operator = '=';
+            $operator = 'bw';
         }
 
         $this->wheres[] = (object) compact(
@@ -222,10 +229,10 @@ class Builder {
         $params = array(
             '-db' => $this->database,
             '-lay' => $this->layout,
-            $this->findCommand => true
+            $this->command => true
         );
 
-        switch($this->findCommand) {
+        switch($this->command) {
             case '-find':
                 if($this->recordId) {
                     return array_merge($params, $this->buildFindByRecordId());
@@ -238,6 +245,8 @@ class Builder {
                 return array_merge($params, $this->buildFindAny());
             case '-findquery':
                 return array_merge($params, $this->buildFindQuery());
+            case '-edit':
+                return array_merge($params, $this->buildUpdate());
         }
 
         return $params;
@@ -308,12 +317,30 @@ class Builder {
     }
 
     /**
+     *
+     */
+    public function buildUpdate()
+    {
+        $params = array('-recid' => $this->recordId);
+
+        foreach($this->attributes as $key => $value) {
+            if($value instanceof DateTime) {
+                $value = $value->format('m/d/Y H:i:s');
+            }
+
+            $params[urlencode($key)] = urlencode($value);
+        }
+
+        return $params;
+    }
+
+    /**
      * @param int $recordId
      * @return Response
      */
     public function find($recordId)
     {
-        $this->findCommand = '-find';
+        $this->command = '-find';
         $this->recordId = $recordId;
 
         return $this->execute()->first();
@@ -325,9 +352,13 @@ class Builder {
     public function get()
     {
         if(count($this->wheres) > 0) {
-            $this->findCommand = '-findquery';
+            if($this->hasDuplicateWheres()) {
+                $this->command = '-findquery';
+            } else {
+                $this->command = '-find';
+            }
         } else {
-            $this->findCommand = '-findall';
+            $this->command = '-findall';
         }
 
         return $this->execute();
@@ -340,9 +371,9 @@ class Builder {
     {
         $this->skip(0)->take(1);
         if ($this->recordId or count($this->wheres) > 0) {
-            $this->findCommand = '-find';
+            $this->command = '-find';
         } else {
-            $this->findCommand = '-findany';
+            $this->command = '-findany';
         }
 
         return $this->execute()->first();
@@ -353,7 +384,21 @@ class Builder {
      */
     public function all()
     {
-        $this->findCommand = '-findall';
+        $this->command = '-findall';
+
+        return $this->execute();
+    }
+
+    /**
+     * @param $recordId
+     * @param array $attributes
+     * @return Response
+     */
+    public function update($recordId, $attributes = array())
+    {
+        $this->recordId = $recordId;
+        $this->attributes = $attributes;
+        $this->command = '-edit';
 
         return $this->execute();
     }
@@ -374,5 +419,22 @@ class Builder {
         }
 
         return implode('&', $params);
+    }
+
+    /**
+     * @return bool
+     */
+    protected function hasDuplicateWheres()
+    {
+        $columns = array();
+        foreach($this->wheres as $where) {
+            if(in_array($where->column, $columns)) {
+                return true;
+            }
+
+            $columns[] = $where->column;
+        }
+
+        return false;
     }
 }
