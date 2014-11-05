@@ -48,6 +48,25 @@ class ResultSet implements IteratorAggregate {
     }
 
     /**
+     * @param string      $column
+     * @param string|null $key
+     * @return array
+     */
+    public function pluck($column, $key = null)
+    {
+        $plucked = array();
+        foreach($this as $record) {
+            if($key === null) {
+                $plucked[] = $record->{$column};
+            } else {
+                $plucked[$record->{$key}] = $$record->{$column};
+            }
+        }
+
+        return $plucked;
+    }
+
+    /**
      * @return ArrayIterator
      */
     public function getIterator()
