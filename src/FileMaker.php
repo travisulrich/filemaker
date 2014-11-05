@@ -2,6 +2,7 @@
 
 use FileMaker\Parser\Parser;
 use InvalidArgumentException;
+use LogicException;
 
 class FileMaker {
     /**
@@ -50,13 +51,28 @@ class FileMaker {
     }
 
     /**
+     * @return string
+     * @throws LogicException
+     */
+    public function getDefaultServer()
+    {
+        if($this->defaultServer) {
+            return $this->defaultServer;
+        }
+
+        throw new LogicException(
+            'You have to register a default server before trying to use it.'
+        );
+    }
+
+    /**
      * @param string $serverName
      * @throws InvalidArgumentException
      */
     public function client($serverName = null)
     {
         if($serverName === null) {
-            $serverName = $this->defaultServer;
+            $serverName = $this->getDefaultServer();
         }
 
         if(!isset($this->servers[$serverName])) {
