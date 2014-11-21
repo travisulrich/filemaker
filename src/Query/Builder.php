@@ -247,6 +247,8 @@ class Builder {
                 return array_merge($params, $this->buildFindQuery());
             case '-edit':
                 return array_merge($params, $this->buildUpdate());
+            case '-new':
+                return array_merge($params, $this->buildNewRecord());
         }
 
         return $params;
@@ -317,11 +319,29 @@ class Builder {
     }
 
     /**
-     *
+     * @return array
      */
     public function buildUpdate()
     {
         $params = array('-recid' => $this->recordId);
+
+        foreach($this->attributes as $key => $value) {
+            if($value instanceof DateTime) {
+                $value = $value->format('m/d/Y H:i:s');
+            }
+
+            $params[urlencode($key)] = urlencode($value);
+        }
+
+        return $params;
+    }
+
+    /**
+     * @return array
+     */
+    public function buildNewRecord()
+    {
+        $params = array();
 
         foreach($this->attributes as $key => $value) {
             if($value instanceof DateTime) {
@@ -399,6 +419,18 @@ class Builder {
         $this->recordId = $recordId;
         $this->attributes = $attributes;
         $this->command = '-edit';
+
+        return $this->execute();
+    }
+
+    /**
+     * @param array $attributes
+     * @return Response
+     */
+    public function add($attributes = array())
+    {
+        $this->attributes = $attributes;
+        $this->command = '-new';
 
         return $this->execute();
     }
