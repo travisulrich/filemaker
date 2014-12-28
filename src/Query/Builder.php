@@ -1,11 +1,24 @@
 <?php namespace FileMaker\Query;
 
+use DateTime;
 use FileMaker\Http\Client;
 use FileMaker\Parser\Parser;
 use FileMaker\Response;
 use FileMaker\Server;
 
 class Builder {
+
+    /**
+     * @var array
+     */
+    protected static $operators = array(
+        'bw' => 'bw',
+        '=' => 'eq',
+        '>' => 'gt',
+        '>=' => 'gte',
+        '<' => 'lt',
+        '<=' => 'lte'
+    );
 
     /**
      * @var string
@@ -30,7 +43,7 @@ class Builder {
     /**
      * @var string
      */
-    protected $findCommand;
+    protected $command;
 
     /**
      * @var int
@@ -64,6 +77,11 @@ class Builder {
      * @var HttpClient
      */
     protected $client;
+
+    /**
+     * @var array
+     */
+    protected $attributes;
 
     /**
      * @param Parser $parser
@@ -108,7 +126,7 @@ class Builder {
     {
         if($value === null) {
             $value = $operator;
-            $operator = '=';
+            $operator = 'bw';
         }
 
         $this->wheres[] = (object) compact(
@@ -219,7 +237,7 @@ class Builder {
         $params = array(
             '-db' => $this->database,
             '-lay' => $this->layout,
-            $this->findCommand => true
+            $this->command => true
         );
 
         foreach($this->optionalParameters as $key => $prop) {
@@ -228,15 +246,23 @@ class Builder {
             }
         }
 
-        switch($this->findCommand) {
+        switch($this->command) {
             case '-find':
-                return array_merge($params, $this->buildFind());
+                if($this->recordId) {
+                    return array_merge($params, $this->buildFindByRecordId());
+                } else {
+                    return array_merge($params, $this->buildFind());
+                }
             case '-findall':
                 return array_merge($params, $this->buildFindAll());
             case '-findany':
                 return array_merge($params, $this->buildFindAny());
             case '-findquery':
                 return array_merge($params, $this->buildFindQuery());
+            case '-edit':
+                return array_merge($params, $this->buildUpdate());
+            case '-new':
+                return array_merge($params, $this->buildNewRecord());
         }
 
         return $params;
@@ -271,6 +297,20 @@ class Builder {
      */
     public function buildFind()
     {
+        $params = array();
+        foreach($this->wheres as $where) {
+            $params[$where->column] = $where->value;
+            $params[$where->column.'.op'] = static::$operators[$where->operator];
+        }
+
+        return $params;
+    }
+
+    /**
+     *
+     */
+    public function buildFindByRecordId()
+    {
         return array(
             '-recid' => $this->recordId
         );
@@ -293,12 +333,48 @@ class Builder {
     }
 
     /**
+     * @return array
+     */
+    public function buildUpdate()
+    {
+        $params = array('-recid' => $this->recordId);
+
+        foreach($this->attributes as $key => $value) {
+            if($value instanceof DateTime) {
+                $value = $value->format('m/d/Y H:i:s');
+            }
+
+            $params[urlencode($key)] = urlencode($value);
+        }
+
+        return $params;
+    }
+
+    /**
+     * @return array
+     */
+    public function buildNewRecord()
+    {
+        $params = array();
+
+        foreach($this->attributes as $key => $value) {
+            if($value instanceof DateTime) {
+                $value = $value->format('m/d/Y H:i:s');
+            }
+
+            $params[urlencode($key)] = urlencode($value);
+        }
+
+        return $params;
+    }
+
+    /**
      * @param int $recordId
      * @return Response
      */
     public function find($recordId)
     {
-        $this->findCommand = '-find';
+        $this->command = '-find';
         $this->recordId = $recordId;
 
         return $this->execute()->first();
@@ -310,9 +386,13 @@ class Builder {
     public function get()
     {
         if(count($this->wheres) > 0) {
-            $this->findCommand = '-findquery';
+            if($this->hasDuplicateWheres()) {
+                $this->command = '-findquery';
+            } else {
+                $this->command = '-find';
+            }
         } else {
-            $this->findCommand = '-findall';
+            $this->command = '-findall';
         }
 
         return $this->execute();
@@ -324,7 +404,11 @@ class Builder {
     public function first()
     {
         $this->skip(0)->take(1);
-        $this->findCommand = '-findany';
+        if ($this->recordId or count($this->wheres) > 0) {
+            $this->command = '-find';
+        } else {
+            $this->command = '-findany';
+        }
 
         return $this->execute()->first();
     }
@@ -334,7 +418,33 @@ class Builder {
      */
     public function all()
     {
-        $this->findCommand = '-findall';
+        $this->command = '-findall';
+
+        return $this->execute();
+    }
+
+    /**
+     * @param $recordId
+     * @param array $attributes
+     * @return Response
+     */
+    public function update($recordId, $attributes = array())
+    {
+        $this->recordId = $recordId;
+        $this->attributes = $attributes;
+        $this->command = '-edit';
+
+        return $this->execute();
+    }
+
+    /**
+     * @param array $attributes
+     * @return Response
+     */
+    public function add($attributes = array())
+    {
+        $this->attributes = $attributes;
+        $this->command = '-new';
 
         return $this->execute();
     }
@@ -355,5 +465,22 @@ class Builder {
         }
 
         return implode('&', $params);
+    }
+
+    /**
+     * @return bool
+     */
+    protected function hasDuplicateWheres()
+    {
+        $columns = array();
+        foreach($this->wheres as $where) {
+            if(in_array($where->column, $columns)) {
+                return true;
+            }
+
+            $columns[] = $where->column;
+        }
+
+        return false;
     }
 }
