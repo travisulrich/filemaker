@@ -48,6 +48,14 @@ class Builder {
     protected $take;
 
     /**
+     * @var array
+     */
+    protected $optionalParameters = array(
+        '-skip' => 'skip',
+        '-max' => 'take'
+    );
+
+    /**
      * @var Parser
      */
     protected $parser;
@@ -213,6 +221,12 @@ class Builder {
             '-lay' => $this->layout,
             $this->findCommand => true
         );
+
+        foreach($this->optionalParameters as $key => $prop) {
+            if($this->{$prop}) {
+                $params[$key] = $this->{$prop};
+            }
+        }
 
         switch($this->findCommand) {
             case '-find':
