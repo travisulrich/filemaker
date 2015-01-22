@@ -59,6 +59,7 @@ class Record {
     public function __get($key)
     {
         switch($key) {
+            case 'attributes':
             case 'recordId':
             case 'modId':
                 return $this->{$key};
