@@ -34,7 +34,8 @@ class Client {
             $this->server->host,
             $this->server->port,
             $this->server->username,
-            $this->server->password
+            $this->server->password,
+            $this->server->secure
         );
     }
 
