@@ -25,6 +25,11 @@ class Server {
      * @var string
      */
     protected $database;
+    
+    /**
+     * @var bool
+     */
+    protected $secure;
 
     /**
      * @param string $host
@@ -33,13 +38,14 @@ class Server {
      * @param string $username
      * @param string $password
      */
-    public function __construct($host, $database, $port = 80, $username = null, $password = null)
+    public function __construct($host, $database, $port = 80, $username = null, $password = null, $secure = false)
     {
         $this->host = $host;
         $this->database = $database;
         $this->port = $port;
         $this->username = $username;
         $this->password = $password;
+        $this->secure = $secure;
     }
 
     /**
