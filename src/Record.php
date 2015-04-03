@@ -61,6 +61,7 @@ class Record {
         switch($key) {
             case 'recordId':
             case 'modId':
+            case 'attributes':
                 return $this->{$key};
             default:
                 return $this->get($key);
