@@ -31,6 +31,16 @@ class Builder {
     protected $layout;
 
     /**
+     * @var string
+     */
+    protected $script;
+
+    /**
+     * @var string|null
+     */
+    protected $scriptParameter;
+
+    /**
      * @var array
      */
     protected $wheres = array();
@@ -111,6 +121,19 @@ class Builder {
     public function layout($name)
     {
         $this->layout = $name;
+
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param string|null $parameter
+     * @return $this
+     */
+    public function script($name, $parameter = null)
+    {
+        $this->script = $name;
+        $this->scriptParameter = $parameter;
 
         return $this;
     }
