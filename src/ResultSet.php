@@ -3,7 +3,8 @@
 use ArrayIterator;
 use IteratorAggregate;
 
-class ResultSet implements IteratorAggregate {
+class ResultSet implements IteratorAggregate
+{
     /**
      * @var int
      */
@@ -55,8 +56,8 @@ class ResultSet implements IteratorAggregate {
     public function pluck($column, $key = null)
     {
         $plucked = array();
-        foreach($this as $record) {
-            if($key === null) {
+        foreach ($this as $record) {
+            if ($key === null) {
                 $plucked[] = $record->{$column};
             } else {
                 $plucked[$record->{$key}] = $$record->{$column};
@@ -80,7 +81,7 @@ class ResultSet implements IteratorAggregate {
      */
     public function __get($key)
     {
-        switch($key) {
+        switch ($key) {
             case 'layout':
             case 'records':
                 return $this->{$key};

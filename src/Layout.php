@@ -1,7 +1,7 @@
 <?php namespace FileMaker;
 
-class Layout {
-
+class Layout
+{
     /**
      * @var array
      */
@@ -28,8 +28,8 @@ class Layout {
      */
     public function removeField($name)
     {
-        if(isset($this->fields[$name])) {
+        if (isset($this->fields[$name])) {
             unset($this->fields[$name]);
         }
     }
-} 
+}

@@ -1,7 +1,7 @@
 <?php namespace FileMaker;
 
-class Field {
-
+class Field
+{
     /**
      * @var bool
      */
@@ -86,4 +86,4 @@ class Field {
     {
         return $this->{$key};
     }
-} 
+}

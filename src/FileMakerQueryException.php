@@ -2,4 +2,7 @@
 
 use Exception;
 
-class FileMakerQueryException extends Exception {}
+class FileMakerQueryException extends Exception
+{
+
+}

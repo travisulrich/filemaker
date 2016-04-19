@@ -2,8 +2,8 @@
 
 use IteratorAggregate;
 
-class Response implements IteratorAggregate {
-
+class Response implements IteratorAggregate
+{
     /**
      * @var Error
      */
@@ -31,7 +31,7 @@ class Response implements IteratorAggregate {
         $this->layout = $layout;
         $this->resultSet = $resultSet;
 
-        if(!$this->error->isAllowed()) {
+        if (!$this->error->isAllowed()) {
             throw new FileMakerQueryException(
                 $this->error->message(),
                 $this->error->code()
@@ -59,6 +59,4 @@ class Response implements IteratorAggregate {
             $arguments
         );
     }
-
-
 }

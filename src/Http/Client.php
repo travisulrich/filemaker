@@ -2,7 +2,8 @@
 
 use Guzzle\Http\Client as GuzzleClient;
 
-class Client {
+class Client
+{
     /**
      *
      */
@@ -62,7 +63,7 @@ class Client {
     {
         $request = $this->createRequest($query);
 
-        if($this->username) {
+        if ($this->username) {
             $request->setAuth(
                 $this->username,
                 $this->password
@@ -70,7 +71,7 @@ class Client {
         }
 
         $response = $request->send();
-        
+
         return $response->getBody(true);
     }
 
@@ -80,11 +81,11 @@ class Client {
      */
     protected function getGuzzleClient()
     {
-        if(!$this->client) {
+        if (!$this->client) {
             $url = $this->createBaseUrl();
             $this->client = new GuzzleClient($url);
         }
-        
+
         return $this->client;
     }
 

@@ -1,6 +1,7 @@
 <?php namespace FileMaker;
 
-class Server {
+class Server
+{
     /**
      * @var string
      */
@@ -48,8 +49,8 @@ class Server {
      */
     public function __get($key)
     {
-        if(property_exists($this, $key)) {
+        if (property_exists($this, $key)) {
             return $this->{$key};
         }
     }
-} 
+}

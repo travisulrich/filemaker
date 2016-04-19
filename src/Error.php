@@ -2,8 +2,8 @@
 
 use InvalidArgumentException;
 
-class Error {
-
+class Error
+{
     /**
      * @var array
      */
@@ -233,7 +233,7 @@ class Error {
     {
         $code = (int) $code;
 
-        if(!isset(static::$errors[$code])) {
+        if (!isset(static::$errors[$code])) {
             throw new InvalidArgumentException(
                 sprintf('Unkown error code: %d', $code)
             );
@@ -265,4 +265,4 @@ class Error {
     {
         return static::$errors[$this->code];
     }
-} 
+}

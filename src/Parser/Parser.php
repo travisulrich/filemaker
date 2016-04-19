@@ -8,8 +8,8 @@ use FileMaker\Response;
 use FileMaker\ResultSet;
 use SimpleXMLIterator;
 
-class Parser {
-
+class Parser
+{
     public function parse($response)
     {
         $elements = new SimpleXMLIterator($response);
@@ -21,9 +21,9 @@ class Parser {
         );
 
         $results = array();
-        foreach($elements as $name => $data) {
-            if(in_array($name, $parsers)) {
-                if($result = $this->runParser($name, $data)) {
+        foreach ($elements as $name => $data) {
+            if (in_array($name, $parsers)) {
+                if ($result = $this->runParser($name, $data)) {
                     $results[$name] = $result;
                 }
             }
@@ -64,7 +64,7 @@ class Parser {
     public function parseMetadata($data)
     {
         $fields = array();
-        foreach($data->{'field-definition'} as $field) {
+        foreach ($data->{'field-definition'} as $field) {
             $attributes = $field->attributes();
 
             $fields[] = new Field(
@@ -93,7 +93,7 @@ class Parser {
             (int) $attributes['fetch-size']
         );
 
-        foreach($data->record as $record) {
+        foreach ($data->record as $record) {
             $attributes = $record->attributes();
 
             $recordObj = new Record(
@@ -101,11 +101,11 @@ class Parser {
                 (int) $attributes['mod-id']
             );
 
-            foreach($record->field as $field) {
+            foreach ($record->field as $field) {
                 $attributes = $field->attributes();
                 $key = (string) $attributes['name'];
 
-                if(is_array($field->data)) {
+                if (is_array($field->data)) {
                     $values = $field->data;
                 } else {
                     $values = (array) $field->data;
@@ -119,4 +119,4 @@ class Parser {
 
         return $resultSet;
     }
-} 
+}

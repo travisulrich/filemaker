@@ -1,6 +1,7 @@
 <?php namespace FileMaker;
 
-class Record {
+class Record
+{
     /**
      * @var int
      */
@@ -44,7 +45,7 @@ class Record {
      */
     public function get($column, $repetition = 1)
     {
-        if(isset($this->attributes[$column])) {
+        if (isset($this->attributes[$column])) {
             $attribute = $this->attributes[$column];
             $index = $repetition -1;
 
@@ -58,7 +59,7 @@ class Record {
      */
     public function __get($key)
     {
-        switch($key) {
+        switch ($key) {
             case 'attributes':
             case 'recordId':
             case 'modId':
@@ -67,4 +68,4 @@ class Record {
                 return $this->get($key);
         }
     }
-} 
+}

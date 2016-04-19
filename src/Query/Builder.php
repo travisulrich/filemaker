@@ -6,8 +6,8 @@ use FileMaker\Parser\Parser;
 use FileMaker\Response;
 use FileMaker\Server;
 
-class Builder {
-
+class Builder
+{
     /**
      * @var array
      */
@@ -147,7 +147,7 @@ class Builder {
      */
     public function where($column, $operator, $value = null, $omit = false)
     {
-        if($value === null) {
+        if ($value === null) {
             $value = $operator;
             $operator = 'bw';
         }
@@ -196,7 +196,7 @@ class Builder {
      */
     public function whereIn($column, $values, $omit = false)
     {
-        foreach($values as $value) {
+        foreach ($values as $value) {
             $this->where($column, '=', $value, $omit);
         }
 
@@ -263,15 +263,15 @@ class Builder {
             $this->command => true
         );
 
-        foreach($this->optionalParameters as $key => $prop) {
-            if($this->{$prop}) {
+        foreach ($this->optionalParameters as $key => $prop) {
+            if ($this->{$prop}) {
                 $params[$key] = $this->{$prop};
             }
         }
 
-        switch($this->command) {
+        switch ($this->command) {
             case '-find':
-                if($this->recordId) {
+                if ($this->recordId) {
                     return array_merge($params, $this->buildFindByRecordId());
                 } else {
                     return array_merge($params, $this->buildFind());
@@ -321,7 +321,7 @@ class Builder {
     public function buildFind()
     {
         $params = array();
-        foreach($this->wheres as $where) {
+        foreach ($this->wheres as $where) {
             $params[$where->column] = $where->value;
             $params[$where->column.'.op'] = static::$operators[$where->operator];
         }
@@ -362,8 +362,8 @@ class Builder {
     {
         $params = array('-recid' => $this->recordId);
 
-        foreach($this->attributes as $key => $value) {
-            if($value instanceof DateTime) {
+        foreach ($this->attributes as $key => $value) {
+            if ($value instanceof DateTime) {
                 $value = $value->format('m/d/Y H:i:s');
             }
 
@@ -380,8 +380,8 @@ class Builder {
     {
         $params = array();
 
-        foreach($this->attributes as $key => $value) {
-            if($value instanceof DateTime) {
+        foreach ($this->attributes as $key => $value) {
+            if ($value instanceof DateTime) {
                 $value = $value->format('m/d/Y H:i:s');
             }
 
@@ -408,8 +408,8 @@ class Builder {
      */
     public function get()
     {
-        if(count($this->wheres) > 0) {
-            if($this->hasDuplicateWheres()) {
+        if (count($this->wheres) > 0) {
+            if ($this->hasDuplicateWheres()) {
                 $this->command = '-findquery';
             } else {
                 $this->command = '-find';
@@ -479,8 +479,8 @@ class Builder {
     protected function buildQueryString($query = array())
     {
         $params = array();
-        foreach($query as $key => $value) {
-            if($value === true) {
+        foreach ($query as $key => $value) {
+            if ($value === true) {
                 $params[] = $key;
             } else {
                 $params[] = implode('=', array($key, $value));
@@ -496,8 +496,8 @@ class Builder {
     protected function hasDuplicateWheres()
     {
         $columns = array();
-        foreach($this->wheres as $where) {
-            if(in_array($where->column, $columns)) {
+        foreach ($this->wheres as $where) {
+            if (in_array($where->column, $columns)) {
                 return true;
             }
 

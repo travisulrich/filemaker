@@ -4,7 +4,8 @@ use FileMaker\Http\Client as HttpClient;
 use FileMaker\Parser\Parser;
 use FileMaker\Query\Builder;
 
-class Client {
+class Client
+{
     /**
      * @var Server
      */
@@ -52,4 +53,4 @@ class Client {
             $this->server->database
         );
     }
-} 
+}
