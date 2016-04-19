@@ -75,7 +75,9 @@ class Builder
      */
     protected $optionalParameters = array(
         '-skip' => 'skip',
-        '-max' => 'take'
+        '-max' => 'take',
+        '-script' => 'script',
+        '-script.param' => 'scriptParameter'
     );
 
     /**
