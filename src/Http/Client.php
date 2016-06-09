@@ -1,6 +1,9 @@
-<?php namespace FileMaker\Http;
+<?php 
 
-use Guzzle\Http\Client as GuzzleClient;
+namespace FileMaker\Http;
+
+use GuzzleHttp\Client as GuzzleClient;
+use Exception;
 
 class Client
 {
@@ -57,24 +60,44 @@ class Client
 
     /**
      * @param string $query
+     * @param array $parameters
      * @return mixed
      */
-    public function post($query)
+    public function post($query, $parameters = array())
     {
-        $request = $this->createRequest($query);
-
-        if ($this->username) {
-            $request->setAuth(
-                $this->username,
-                $this->password
-            );
-        }
-
-        $response = $request->send();
-
-        return $response->getBody(true);
+        return $this->call('POST', $query, $parameters);
     }
 
+    /**
+     * Performs an API call to the FileMaker server.
+     * 
+     * @param string $method
+     * @param string $query
+     * @param array $parameters
+     * @return \FileMaker\Record
+     * @throws Exception
+     */
+    protected function call($method, $query, $parameters)
+    {
+        $client = $this->getGuzzleClient();
+        $uri = $this->createRequestUri($query);
+
+        if ($this->username) {
+            $auth = ['auth' => [$this->username, $this->password]];
+            $parameters = array_merge($parameters, $auth);
+        }
+        
+        $response = $client->request($method, $uri, $parameters);
+        
+        switch ($response->getStatusCode()) {
+            case 200:
+                return $response->getBody()->getContents();
+            default:
+                $msg = sprintf('Error executing API request: %s %s', $method, $uri);
+
+                throw new Exception($msg);
+        }
+    }
 
     /**
      * @return GuzzleClient
@@ -83,7 +106,7 @@ class Client
     {
         if (!$this->client) {
             $url = $this->createBaseUrl();
-            $this->client = new GuzzleClient($url);
+            $this->client = new GuzzleClient(['base_uri' => $url]);
         }
 
         return $this->client;
