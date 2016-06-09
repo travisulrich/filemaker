@@ -1,4 +1,6 @@
-<?php namespace FileMaker\Parser;
+<?php 
+
+namespace FileMaker\Parser;
 
 use FileMaker\Error;
 use FileMaker\Field;

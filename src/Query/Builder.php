@@ -1,4 +1,6 @@
-<?php namespace FileMaker\Query;
+<?php 
+
+namespace FileMaker\Query;
 
 use DateTime;
 use FileMaker\Http\Client;

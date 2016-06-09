@@ -1,4 +1,6 @@
-<?php namespace FileMaker;
+<?php 
+
+namespace FileMaker;
 
 class Record
 {

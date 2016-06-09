@@ -1,4 +1,6 @@
-<?php namespace FileMaker;
+<?php 
+
+namespace FileMaker;
 
 use FileMaker\Http\Client as HttpClient;
 use FileMaker\Parser\Parser;
