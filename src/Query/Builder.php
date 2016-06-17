@@ -266,13 +266,15 @@ class Builder
             '-lay' => $this->layout,
             $this->command => true
         );
+        
+        $params = array_merge($params, $this->buildOrderByQuery());
 
         foreach ($this->optionalParameters as $key => $prop) {
             if ($this->{$prop}) {
                 $params[$key] = $this->{$prop};
             }
         }
-
+        
         switch ($this->command) {
             case '-find':
                 if ($this->recordId) {
@@ -293,6 +295,33 @@ class Builder
         }
 
         return $params;
+    }
+
+    /**
+     * @return array
+     */
+    protected function buildOrderByQuery()
+    {
+        $orderBy = array();
+
+        foreach ($this->orders as $key => $order) {
+            $key = $key + 1;
+            $orderBy['-sortfield.' . $key] = $order->column;
+            switch ($order->direction) {
+                case 'asc':
+                    $direction = 'ascend';
+                    break;
+                case 'desc':
+                    $direction = 'descend';
+                    break;
+                default:
+                    $direction = $order->direction;
+                    break;
+            }
+            $orderBy['-sortorder.' . $key] = $direction;
+        }
+
+        return $orderBy;
     }
 
     /**
