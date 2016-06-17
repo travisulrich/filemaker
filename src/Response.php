@@ -50,6 +50,14 @@ class Response implements IteratorAggregate
     }
 
     /**
+     * @return int
+     */
+    public function getCount()
+    {
+        return $this->resultSet->count;
+    }
+
+    /**
      * @param string $name
      * @param array  $arguments
      * @return mixed

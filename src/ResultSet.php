@@ -86,6 +86,7 @@ class ResultSet implements IteratorAggregate
         switch ($key) {
             case 'layout':
             case 'records':
+            case 'count':
                 return $this->{$key};
         }
     }
