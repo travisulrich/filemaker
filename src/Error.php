@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace FileMaker;
 
@@ -171,6 +171,7 @@ class Error
         956 => 'Maximum number of database sessions exceeded',
         957 => 'Conflicting commands',
         958 => 'Parameter missing in query',
+        959 => 'Technology disabled',
         1200 => 'Generic calculation error',
         1201 => 'Too few parameters in the function',
         1202 => 'Too many parameters in the function',
