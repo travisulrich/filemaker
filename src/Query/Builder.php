@@ -249,9 +249,9 @@ class Builder
      */
     protected function execute()
     {
-        $query = $this->buildQueryString($this->build());
-
-        $response = $this->client->post($query);
+        $response = $this->client->post(
+            $this->build()
+        );
 
         return $this->parser->parse($response);
     }
@@ -264,7 +264,7 @@ class Builder
         $params = array(
             '-db' => $this->database,
             '-lay' => $this->layout,
-            $this->command => true
+            $this->command => '',
         );
         
         $params = array_merge($params, $this->buildOrderByQuery());
@@ -279,9 +279,9 @@ class Builder
             case '-find':
                 if ($this->recordId) {
                     return array_merge($params, $this->buildFindByRecordId());
-                } else {
-                    return array_merge($params, $this->buildFind());
                 }
+
+                return array_merge($params, $this->buildFind());
             case '-findall':
                 return array_merge($params, $this->buildFindAll());
             case '-findany':

@@ -1,102 +1,74 @@
-<?php 
+<?php
 
 namespace FileMaker\Http;
 
-use GuzzleHttp\Client as GuzzleClient;
 use Exception;
+use FileMaker\Record;
+use FileMaker\Server;
+use GuzzleHttp\Client as GuzzleClient;
 
 class Client
 {
-    /**
-     *
-     */
-    const URI = '/fmi/xml/fmresultset.xml?%s';
+    const URI = '/fmi/xml/fmresultset.xml';
 
     /**
-     * @var string
+     * @var Server
      */
-    protected $host;
+    private $server;
 
     /**
-     * @var int
+     * @param Server $server
      */
-    protected $port;
-
-    /**
-     * @var string
-     */
-    protected $username;
-
-    /**
-     * @var string
-     */
-    protected $password;
-
-    /**
-     * @var bool
-     */
-    protected $ssl;
-
-    /**
-     * @var
-     */
-    protected $client;
-
-    /**
-     * @param string $host
-     * @param int    $port
-     * @param string $username
-     * @param string $password
-     * @param bool   $ssl
-     */
-    public function __construct($host, $port, $username, $password, $ssl = false)
+    public function __construct(Server $server)
     {
-        $this->host = $host;
-        $this->port = $port;
-        $this->username = $username;
-        $this->password = $password;
-        $this->ssl = $ssl;
+        $this->server = $server;
     }
 
     /**
-     * @param string $query
-     * @param array $parameters
-     * @return mixed
+     * @param array $data
+     * @return Record
      */
-    public function post($query, $parameters = array())
+    public function post($data = [])
     {
-        return $this->call('POST', $query, $parameters);
+        return $this->call('POST', $data);
     }
 
     /**
      * Performs an API call to the FileMaker server.
-     * 
+     *
      * @param string $method
-     * @param string $query
-     * @param array $parameters
-     * @return \FileMaker\Record
+     * @param array $data
+     * @return Record
      * @throws Exception
      */
-    protected function call($method, $query, $parameters)
+    protected function call($method, array $data = [])
     {
-        $client = $this->getGuzzleClient();
-        $uri = $this->createRequestUri($query);
+        $params = [
+            'form_params' => $data,
+            'headers' => [
+                'Content-Type' => 'application/x-www-form-urlencoded; charset=utf-8',
+            ],
+        ];
 
-        if ($this->username) {
-            $auth = ['auth' => [$this->username, $this->password]];
-            $parameters = array_merge($parameters, $auth);
+        if ($this->server->getUsername()) {
+            $params['auth'] = [
+                $this->server->getUsername(),
+                $this->server->getPassword()
+            ];
         }
-        
-        $response = $client->request($method, $uri, $parameters);
-        
-        switch ($response->getStatusCode()) {
-            case 200:
-                return $response->getBody()->getContents();
-            default:
-                $msg = sprintf('Error executing API request: %s %s', $method, $uri);
 
-                throw new Exception($msg);
+        if ($this->server->getOption('pretend_php')) {
+            $params['headers']['X-FMI-PE-ExtendedPrivilege'] = 'IrG6U+Rx0F5bLIQCUb9gOw==';
         }
+
+        $uri = static::URI;
+        $response = $this->getGuzzleClient()->request($method, $uri, $params);
+
+        if ($response->getStatusCode() !== 200) {
+            throw new Exception("Error executing API request: $method $uri");
+        }
+
+        return $response->getBody()->getContents();
     }
 
     /**
@@ -104,45 +76,26 @@ class Client
      */
     protected function getGuzzleClient()
     {
-        if (!$this->client) {
-            $url = $this->createBaseUrl();
-            $this->client = new GuzzleClient(['base_uri' => $url]);
+        static $client;
+        if ( ! $client) {
+            $client = new GuzzleClient([
+                'base_uri' => $this->createBaseUrl(),
+            ]);
         }
 
-        return $this->client;
+        return $client;
     }
 
     /**
-     * @param array $query
-     * @return mixed
-     */
-    protected function createRequest($query = array())
-    {
-        $client = $this->getGuzzleClient();
-        $uri = $this->createRequestUri($query);
-
-        return $client->post($uri);
-    }
-
-    /**
-     * @return mixed
+     * @return string
      */
     protected function createBaseUrl()
     {
         return sprintf(
             '%s://%s%s',
-            $this->ssl ? 'https' : 'http',
-            $this->host,
-            $this->port == 80 ? '' : ":{$this->port}"
+            $this->server->getOption('ssl') ? 'https' : 'http',
+            $this->server->getHost(),
+            $this->server->getPort() == 80 ? '' : ":{$this->server->getPort()}"
         );
-    }
-
-    /**
-     * @param array $query
-     * @return string
-     */
-    protected function createRequestUri($query)
-    {
-        return sprintf(static::URI, $query);
     }
 }

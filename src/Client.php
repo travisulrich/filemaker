@@ -11,12 +11,12 @@ class Client
     /**
      * @var Server
      */
-    protected $server;
+    private $server;
 
     /**
      * @var Parser
      */
-    protected $parser;
+    private $parser;
 
     /**
      * @param Server $server
@@ -31,18 +31,15 @@ class Client
     /**
      * @return HttpClient
      */
-    public function getHttpClient()
+    private function getHttpClient()
     {
         return new HttpClient(
-            $this->server->host,
-            $this->server->port,
-            $this->server->username,
-            $this->server->password
+            $this->server
         );
     }
 
     /**
-     * @return mixed
+     * @return Builder
      */
     public function newQuery()
     {
@@ -52,7 +49,7 @@ class Client
         );
 
         return $query->database(
-            $this->server->database
+            $this->server->getDatabase()
         );
     }
 }

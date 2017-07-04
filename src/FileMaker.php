@@ -70,6 +70,7 @@ class FileMaker
 
     /**
      * @param string $serverName
+     * @return Client
      * @throws InvalidArgumentException
      */
     public function client($serverName = null)
