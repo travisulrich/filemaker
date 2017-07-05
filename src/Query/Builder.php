@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace FileMaker\Query;
 
@@ -6,7 +6,6 @@ use DateTime;
 use FileMaker\Http\Client;
 use FileMaker\Parser\Parser;
 use FileMaker\Response;
-use FileMaker\Server;
 
 class Builder
 {
@@ -156,7 +155,7 @@ class Builder
             $operator = 'bw';
         }
 
-        $this->wheres[] = (object) compact(
+        $this->wheres[] = (object)compact(
             'column',
             'omit',
             'operator',
@@ -180,9 +179,9 @@ class Builder
 
     /**
      * @param string $column
-     * @param int    $first
-     * @param int    $second
-     * @param bool   $omit
+     * @param int $first
+     * @param int $second
+     * @param bool $omit
      * @return $this
      */
     public function whereRange($column, $first, $second, $omit = false)
@@ -194,8 +193,8 @@ class Builder
 
     /**
      * @param string $column
-     * @param array  $values
-     * @param bool   $omit
+     * @param array $values
+     * @param bool $omit
      * @return $this
      */
     public function whereIn($column, $values, $omit = false)
@@ -214,7 +213,7 @@ class Builder
      */
     public function orderBy($column, $direction = 'asc')
     {
-        $this->orders[] = (object) compact(
+        $this->orders[] = (object)compact(
             'column',
             'direction'
         );
@@ -266,7 +265,7 @@ class Builder
             '-lay' => $this->layout,
             $this->command => '',
         );
-        
+
         $params = array_merge($params, $this->buildOrderByQuery());
 
         foreach ($this->optionalParameters as $key => $prop) {
@@ -274,7 +273,7 @@ class Builder
                 $params[$key] = $this->{$prop};
             }
         }
-        
+
         switch ($this->command) {
             case '-find':
                 if ($this->recordId) {
@@ -334,7 +333,7 @@ class Builder
             $key = "q{$index}";
 
             $params["-{$key}"] = $where->column;
-            $params["-{$key}.value"] = $where->operator.$where->value;
+            $params["-{$key}.value"] = $where->operator . $where->value;
 
             $query[] = sprintf(
                 '%s(%s)',
@@ -356,7 +355,7 @@ class Builder
         $params = array();
         foreach ($this->wheres as $where) {
             $params[$where->column] = $where->value;
-            $params[$where->column.'.op'] = static::$operators[$where->operator];
+            $params[$where->column . '.op'] = static::$operators[$where->operator];
         }
 
         return $params;

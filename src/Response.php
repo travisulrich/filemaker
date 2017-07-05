@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace FileMaker;
 
@@ -33,7 +33,7 @@ class Response implements IteratorAggregate
         $this->layout = $layout;
         $this->resultSet = $resultSet;
 
-        if (!$this->error->isAllowed()) {
+        if ( ! $this->error->isAllowed()) {
             throw new FileMakerQueryException(
                 $this->error->message(),
                 $this->error->code()
@@ -59,7 +59,7 @@ class Response implements IteratorAggregate
 
     /**
      * @param string $name
-     * @param array  $arguments
+     * @param array $arguments
      * @return mixed
      */
     public function __call($name, $arguments)

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace FileMaker;
 
@@ -29,8 +29,8 @@ class ResultSet implements IteratorAggregate
      */
     public function __construct($count, $fetchSize, $records = array())
     {
-        $this->count = (int) $count;
-        $this->fetchSize = (int) $fetchSize;
+        $this->count = (int)$count;
+        $this->fetchSize = (int)$fetchSize;
         $this->records = $records;
     }
 
@@ -51,7 +51,7 @@ class ResultSet implements IteratorAggregate
     }
 
     /**
-     * @param string      $column
+     * @param string $column
      * @param string|null $key
      * @return array
      */

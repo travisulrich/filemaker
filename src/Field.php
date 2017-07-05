@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace FileMaker;
 
@@ -66,12 +66,22 @@ class Field
      * @param string $timeOfDay
      * @param string $type
      */
-    public function __construct($autoEnter, $fourDigitYear, $global, $maxRepeat, $name, $notEmpty, $numericOnly, $result, $timeOfDay, $type)
-    {
+    public function __construct(
+        $autoEnter,
+        $fourDigitYear,
+        $global,
+        $maxRepeat,
+        $name,
+        $notEmpty,
+        $numericOnly,
+        $result,
+        $timeOfDay,
+        $type
+    ) {
         $this->autoEnter = $autoEnter === 'yes';
         $this->fourDigitYear = $fourDigitYear === 'yes';
         $this->global = $global === 'yes';
-        $this->maxRepeat = (int) $maxRepeat;
+        $this->maxRepeat = (int)$maxRepeat;
         $this->name = $name;
         $this->notEmpty = $notEmpty === 'yes';
         $this->numericOnly = $numericOnly === 'yes';

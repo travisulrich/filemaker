@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace FileMaker\Parser;
 
@@ -48,7 +48,7 @@ class Parser
     public function parseError($data)
     {
         $attributes = $data->attributes();
-        $code = (string) $attributes['code'];
+        $code = (string)$attributes['code'];
 
         return new Error($code);
     }
@@ -70,16 +70,16 @@ class Parser
             $attributes = $field->attributes();
 
             $fields[] = new Field(
-                (string) $attributes['auto-enter'],
-                (string) $attributes['four-digit-year'],
-                (string) $attributes['global'],
-                (string) $attributes['max-repeat'],
-                (string) $attributes['name'],
-                (string) $attributes['not-empty'],
-                (string) $attributes['numeric-only'],
-                (string) $attributes['result'],
-                (string) $attributes['time-of-day'],
-                (string) $attributes['type']
+                (string)$attributes['auto-enter'],
+                (string)$attributes['four-digit-year'],
+                (string)$attributes['global'],
+                (string)$attributes['max-repeat'],
+                (string)$attributes['name'],
+                (string)$attributes['not-empty'],
+                (string)$attributes['numeric-only'],
+                (string)$attributes['result'],
+                (string)$attributes['time-of-day'],
+                (string)$attributes['type']
             );
         }
 
@@ -91,26 +91,26 @@ class Parser
         $attributes = $data->attributes();
 
         $resultSet = new ResultSet(
-            (int) $attributes['count'],
-            (int) $attributes['fetch-size']
+            (int)$attributes['count'],
+            (int)$attributes['fetch-size']
         );
 
         foreach ($data->record as $record) {
             $attributes = $record->attributes();
 
             $recordObj = new Record(
-                (int) $attributes['record-id'],
-                (int) $attributes['mod-id']
+                (int)$attributes['record-id'],
+                (int)$attributes['mod-id']
             );
 
             foreach ($record->field as $field) {
                 $attributes = $field->attributes();
-                $key = (string) $attributes['name'];
+                $key = (string)$attributes['name'];
 
                 if (is_array($field->data)) {
                     $values = $field->data;
                 } else {
-                    $values = (array) $field->data;
+                    $values = (array)$field->data;
                 }
 
                 $recordObj->addAttribute($key, $values);

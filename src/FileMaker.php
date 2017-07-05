@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace FileMaker;
 
@@ -79,13 +79,13 @@ class FileMaker
             $serverName = $this->getDefaultServer();
         }
 
-        if (!isset($this->servers[$serverName])) {
+        if ( ! isset($this->servers[$serverName])) {
             throw new InvalidArgumentException(
                 sprintf('Server not registered: %s', $serverName)
             );
         }
 
-        if (!isset($this->clients[$serverName])) {
+        if ( ! isset($this->clients[$serverName])) {
             $server = $this->servers[$serverName];
             $this->clients[$serverName] = new Client(
                 $server,

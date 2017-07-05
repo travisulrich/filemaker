@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace FileMaker;
 
@@ -42,14 +42,14 @@ class Record
 
     /**
      * @param string $column
-     * @param int    $repetition
+     * @param int $repetition
      * @return null
      */
     public function get($column, $repetition = 1)
     {
         if (isset($this->attributes[$column])) {
             $attribute = $this->attributes[$column];
-            $index = $repetition -1;
+            $index = $repetition - 1;
 
             return isset($attribute[$index]) ? $attribute[$index] : null;
         }

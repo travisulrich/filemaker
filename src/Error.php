@@ -86,7 +86,7 @@ class Error
         410 => 'Export order is invalid',
         412 => 'Wrong version of FileMaker Pro used to recover file',
         413 => 'Specified field has inappropriate field type',
-        414  => 'Layout cannot display the result',
+        414 => 'Layout cannot display the result',
         415 => 'One or more required related records are not available',
         500 => 'Date value does not meet validation entry options',
         501 => 'Time value does not meet validation entry options',
@@ -220,7 +220,8 @@ class Error
      * @var array
      */
     protected static $allowedErrors = array(
-        0, 401
+        0,
+        401
     );
 
     /**
@@ -234,9 +235,9 @@ class Error
      */
     public function __construct($code)
     {
-        $code = (int) $code;
+        $code = (int)$code;
 
-        if (!isset(static::$errors[$code])) {
+        if ( ! isset(static::$errors[$code])) {
             throw new InvalidArgumentException(
                 sprintf('Unkown error code: %d', $code)
             );
