@@ -14,6 +14,8 @@ class Builder
      */
     protected static $operators = array(
         'bw' => 'bw',
+        'cn' => 'cn',
+        'neq' => 'neq',
         '=' => 'eq',
         '>' => 'gt',
         '>=' => 'gte',
